@@ -1,5 +1,5 @@
 #include <SFML/Graphics.hpp>
-#include <time.h>
+#include<SFML/Audio.hpp>
 #include <string>
 using namespace sf;
 int minesaround(bool bgrid[12][12], int grid[12][12], int i, int j) {
@@ -19,19 +19,19 @@ int minesaround(bool bgrid[12][12], int grid[12][12], int i, int j) {
     }
     return n;
 }
-void Visit(int& game, int grid[12][12], int i, int j, bool bgrid[12][12], int sgrid[12][12]) {
+void Visit(int& game, int grid[12][12], int i, int j, bool bgrid[12][12], int sgrid[12][12],Sound& s1,SoundBuffer& b1) {
     if (i >= 0 && j >= 0 && i < 12 && j < 12) {
         if (minesaround(bgrid, grid, i, j) == 0 && grid[i][j] != 9 && grid[i][j] != 11 && bgrid[i][j] == false) {
             sgrid[i][j] = grid[i][j];
             bgrid[i][j] = true;
-            Visit(game, grid, i - 1, j, bgrid, sgrid);
-            Visit(game, grid, i + 1, j, bgrid, sgrid);
-            Visit(game, grid, i, j + 1, bgrid, sgrid);
-            Visit(game, grid, i, j - 1, bgrid, sgrid);
-            Visit(game, grid, i - 1, j + 1, bgrid, sgrid);
-            Visit(game, grid, i + 1, j + 1, bgrid, sgrid);
-            Visit(game, grid, i - 1, j - 1, bgrid, sgrid);
-            Visit(game, grid, i + 1, j - 1, bgrid, sgrid);
+            Visit(game, grid, i - 1, j, bgrid, sgrid,s1,b1);
+            Visit(game, grid, i + 1, j, bgrid, sgrid,s1,b1);
+            Visit(game, grid, i, j + 1, bgrid, sgrid,s1,b1);
+            Visit(game, grid, i, j - 1, bgrid, sgrid,s1,b1);
+            Visit(game, grid, i - 1, j + 1, bgrid, sgrid,s1,b1);
+            Visit(game, grid, i + 1, j + 1, bgrid, sgrid,s1,b1);
+            Visit(game, grid, i - 1, j - 1, bgrid, sgrid,s1,b1);
+            Visit(game, grid, i + 1, j - 1, bgrid, sgrid,s1,b1);
         }
         else if (minesaround(bgrid, grid, i, j) > 0) {
             sgrid[i][j] = grid[i][j];
@@ -39,8 +39,13 @@ void Visit(int& game, int grid[12][12], int i, int j, bool bgrid[12][12], int sg
             return;
         }
         else if (grid[i][j] == 9) {
+            if (!b1.loadFromFile("Exp.wav"))
+            {
+            }
+            s1.setBuffer(b1);
+            s1.play();
             sgrid[i][j] = grid[i][j];
-            bgrid[i][j] = true;
+            bgrid[i][j] = true;           
             game = -1;
         }
         else {
@@ -65,7 +70,7 @@ int gameover(int& game, int minesnumber, bool bgrid[12][12]) {
     }
     return game;
 }
-void reset(int count, int nom, bool bgrid[12][12], int grid[12][12], int sgrid[12][12], sf::RenderWindow& i_window, int& game) {
+void reset(int count, int nom, bool bgrid[12][12], int grid[12][12], int sgrid[12][12], RenderWindow& i_window, int& game) {
     i_window.clear(Color::White);
     while (count != nom) {
         for (int i = 1; i <= 10; i++)
@@ -155,6 +160,8 @@ int main()
     RenderWindow app(VideoMode(400, 400), "Minesweeper");
     Alexander.setPosition(static_cast<float>(w * 11 - Alexander_texture.getSize().y), w * 11);
     Alexander.setTexture(Alexander_texture);
+    SoundBuffer b1;
+    Sound s1;
     while (count != nom) {
         for (int i = 1; i <= 10; i++)
             for (int j = 1; j <= 10; j++)
@@ -210,7 +217,7 @@ int main()
             if (e.type == Event::MouseButtonPressed)
                 if (e.key.code == Mouse::Left && bgrid[x][y] == false) {
                     alexanderstate = 1;
-                    Visit(game, grid, x, y, bgrid, sgrid);
+                    Visit(game, grid, x, y, bgrid, sgrid,s1,b1);
                 }
                 else if (e.key.code == Mouse::Right && bgrid[x][y] != true) {
                     alexanderstate = 1;
@@ -223,7 +230,7 @@ int main()
             {
                 if (sgrid[x][y] == 9) {
                     sgrid[i][j] = grid[i][j];
-                    bgrid[i][j] = true;
+                    bgrid[i][j] = true;   
                 }
                 s.setTextureRect(IntRect(sgrid[i][j] * w, 0, w, w));
                 s.setPosition(i * w, j * w);
