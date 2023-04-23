@@ -56,7 +56,7 @@ void Visit(int& game, int grid[12][12], int i, int j, bool bgrid[12][12], int sg
         return;
     }
 }
-int gameover(int& game, int minesnumber, bool bgrid[12][12]) {
+int gameover(int& game, int minesnumber, bool bgrid[12][12],SoundBuffer& b2,Sound& s2,int &count) {
     int counts = 0;
     for (int i = 1; i <= 10; i++)
         for (int j = 1; j <= 10; j++)
@@ -67,6 +67,21 @@ int gameover(int& game, int minesnumber, bool bgrid[12][12]) {
         }
     if (counts == minesnumber) {
         game = 1;
+        String st1 = "Win";
+        String st2 = ".wav";
+        String st3 = std::to_string(count);
+        String st4 = st1 + st3 + st2;
+        if (!b2.loadFromFile(st4))
+        {
+        }
+        s2.setBuffer(b2);
+        s2.play();
+        if (count < 4) {
+        count++;
+    }
+        else {
+            count = 1;
+        }
     }
     return game;
 }
@@ -142,6 +157,7 @@ int noofflags(int nom, int sgrid[12][12]) {
 }
 int main()
 {
+    int soundcount=1;
     int nom = 10;
     int game = 0;
     int w = 32;
@@ -160,8 +176,8 @@ int main()
     RenderWindow app(VideoMode(400, 400), "Minesweeper");
     Alexander.setPosition(static_cast<float>(w * 11 - Alexander_texture.getSize().y), w * 11);
     Alexander.setTexture(Alexander_texture);
-    SoundBuffer b1;
-    Sound s1;
+    SoundBuffer b1,b2;
+    Sound s1,s2;
     while (count != nom) {
         for (int i = 1; i <= 10; i++)
             for (int j = 1; j <= 10; j++)
@@ -196,8 +212,6 @@ int main()
         Vector2i pos = Mouse::getPosition(app);
         int x = pos.x / w;
         int y = pos.y / w;
-        std::string positionx = std::to_string(x);
-        std::string positiony = std::to_string(y);
         Event e;
         if(x<11&&y<11){
         while (app.pollEvent(e))
@@ -220,8 +234,14 @@ int main()
                     Visit(game, grid, x, y, bgrid, sgrid,s1,b1);
                 }
                 else if (e.key.code == Mouse::Right && bgrid[x][y] != true) {
-                    alexanderstate = 1;
-                    sgrid[x][y] = 11;
+                    if (sgrid[x][y] == 11) {
+                        alexanderstate = 1;
+                        sgrid[x][y] = 10;
+                    }
+                    else {
+                        alexanderstate = 1;
+                        sgrid[x][y] = 11;
+                    }
                 }
         }
         app.clear(Color::White);
@@ -237,9 +257,9 @@ int main()
                 app.draw(s);
             }
     }
-        gameover(game, nom, bgrid);
-        if (game > 0) {
-            alexanderstate = 3;
+        gameover(game, nom, bgrid,b2,s2,soundcount);
+        if (game > 0) {      
+            alexanderstate = 3;                    
             draw_text(1, static_cast<unsigned short>(round(0.5f * (8 * 12 - 8 * 5))), static_cast<unsigned short>(round(0.5f * (8 * 12 - 85))), "VICTORY!", app);
             for (int i = 1; i <= 10; i++)
                 for (int j = 1; j <= 10; j++) {
@@ -258,9 +278,9 @@ int main()
                 }
         }
         Alexander.setTextureRect(sf::IntRect(alexanderstate * Alexander_texture.getSize().y, 0, Alexander_texture.getSize().y, Alexander_texture.getSize().y));
-        draw_text(1, 5, 8 * 45, "Mines:" + std::to_string(nom - noofflags(nom, sgrid)), app);
+        draw_text(1, 5, 8 * 45, "Mines:" + std::to_string(nom - noofflags(nom, sgrid)), app); 
         app.draw(Alexander);
         app.display();
-    }
+        }
     return 0;
 }
