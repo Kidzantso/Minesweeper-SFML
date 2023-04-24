@@ -176,8 +176,8 @@ int main()
     RenderWindow app(VideoMode(400, 400), "Minesweeper");
     Alexander.setPosition(static_cast<float>(w * 11 - Alexander_texture.getSize().y), w * 11);
     Alexander.setTexture(Alexander_texture);
-    SoundBuffer b1,b2;
-    Sound s1,s2;
+    SoundBuffer b1,b2,b3,b4;
+    Sound s1,s2,s3,s4;
     while (count != nom) {
         for (int i = 1; i <= 10; i++)
             for (int j = 1; j <= 10; j++)
@@ -231,15 +231,26 @@ int main()
             if (e.type == Event::MouseButtonPressed)
                 if (e.key.code == Mouse::Left && bgrid[x][y] == false) {
                     alexanderstate = 1;
+                    if (!b3.loadFromFile("Open.wav"))
+                    {
+                    }
+                    s3.setBuffer(b3);
+                    s3.play();
                     Visit(game, grid, x, y, bgrid, sgrid,s1,b1);
                 }
                 else if (e.key.code == Mouse::Right && bgrid[x][y] != true) {
                     if (sgrid[x][y] == 11) {
                         alexanderstate = 1;
+                        
                         sgrid[x][y] = 10;
                     }
                     else {
                         alexanderstate = 1;
+                        if (!b4.loadFromFile("Flag.wav"))
+                        {
+                        }
+                        s4.setBuffer(b4);
+                        s4.play();
                         sgrid[x][y] = 11;
                     }
                 }
