@@ -39,7 +39,7 @@ void Visit(int& game, int grid[12][12], int i, int j, bool bgrid[12][12], int sg
             return;
         }
         else if (grid[i][j] == 9) {
-            if (!b1.loadFromFile("Exp.wav"))
+            if (!b1.loadFromFile("Sounds/Exp.wav"))
             {
             }
             s1.setBuffer(b1);
@@ -71,7 +71,7 @@ int gameover(int& game, int minesnumber, bool bgrid[12][12],SoundBuffer& b2,Soun
         String st2 = ".wav";
         String st3 = std::to_string(count);
         String st4 = st1 + st3 + st2;
-        if (!b2.loadFromFile(st4))
+        if (!b2.loadFromFile("Sounds/"+st4))
         {
         }
         s2.setBuffer(b2);
@@ -213,7 +213,7 @@ int main()
         int x = pos.x / w;
         int y = pos.y / w;
         Event e;
-        if(x<11&&y<11){
+        if(x<11&&y<11&&x>0&&y>0){
         while (app.pollEvent(e))
         {
             switch (e.type) {
@@ -231,7 +231,7 @@ int main()
             if (e.type == Event::MouseButtonPressed)
                 if (e.key.code == Mouse::Left && bgrid[x][y] == false) {
                     alexanderstate = 1;
-                    if (!b3.loadFromFile("Open.wav"))
+                    if (!b3.loadFromFile("Sounds/Open.wav"))
                     {
                     }
                     s3.setBuffer(b3);
@@ -240,13 +240,12 @@ int main()
                 }
                 else if (e.key.code == Mouse::Right && bgrid[x][y] != true) {
                     if (sgrid[x][y] == 11) {
-                        alexanderstate = 1;
-                        
+                        alexanderstate = 1;                        
                         sgrid[x][y] = 10;
                     }
                     else {
                         alexanderstate = 1;
-                        if (!b4.loadFromFile("Flag.wav"))
+                        if (!b4.loadFromFile("Sounds/Flag.wav"))
                         {
                         }
                         s4.setBuffer(b4);
